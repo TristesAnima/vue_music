@@ -1,0 +1,22 @@
+@media screen and (max-width: 570px) {
+  html,
+  body,
+  #app {
+    overflow-y: hidden;
+  }
+
+  .index-container .player {
+    position: fixed;
+    left: 0;
+    top: 613px;
+    /* max-width: 100%; */
+  }
+
+  .index-container .player audio {
+    width: 100% !important;
+  }
+
+  .index-container .nav {
+    height: 613px;
+  }
+}
