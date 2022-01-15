@@ -90,27 +90,15 @@ export default {
   },
   methods: {
     async topData () {
-      const { data: res } = await this.$axios.get('/api/top/playlist/highquality', {
-        params: {
-          limit: 1,
-          cat: this.tag
-        }
+      this.$api.topDatas(this.tag).then((val) => {
+        this.topList = val
       })
-      //  console.log(res);
-      this.topList = res.playlists[0]
     },
     async listData () {
-      const { data: resone } = await this.$axios.get('/api/top/playlist/', {
-        params: {
-          limit: 10,
-          // 起始的值 （页码-1）*每页多少条数据
-          offset: (this.page - 1) * 10,
-          cat: this.tag
-        }
+      this.$api.listDatas(this.page, this.tag).then((val) => {
+        this.total = val.total
+        this.list = val.playlists
       })
-      // console.log(resone);
-      this.total = resone.total
-      this.list = resone.playlists
     },
     handleCurrentChange (val) {
       // console.log(`当前页: ${val}`)

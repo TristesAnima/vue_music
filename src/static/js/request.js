@@ -18,12 +18,12 @@ export const request = () => {
       NProgress.start()
       if (config.method === 'post') {
         config.data = {
-          _t: Date.parse(new Date()) / 1000,
+          _t: new Date().getTime(),
           ...config.data
         }
       } else if (config.method === 'get') {
         config.params = {
-          _t: Date.parse(new Date()) / 1000,
+          _t: new Date().getTime(),
           ...config.params
         }
       }

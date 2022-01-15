@@ -63,15 +63,9 @@ export default {
   },
   methods: {
     async getSingersInfo () {
-      const { data: res } = await this.$axios.get('/api/artist/list', {
-        params: {
-          type: this.type,
-          area: this.area,
-          limit: this.limit,
-          offset: (this.page - 1) * this.limit
-        }
+      this.$api.getSinger(this.type, this.area, this.limit, this.page).then(val => {
+        this.getSingers = val
       })
-      this.getSingers = res.artists
     },
     // 页码改变的回调函数
     handleCurrentChange (val) {

@@ -158,27 +158,20 @@ export default {
       // 普通评论
       comments: [],
       // 发送的评论
-      textarea: ''
+      textarea: '',
+      // 类型
+      type: 2
     }
   },
   async created () {
-    // 获取歌单详情
-    const { data: res } = await this.$axios.get('/api/playlist/detail', {
-      params: {
-        id: this.$route.query.q
-      }
+    this.$api.getPlayListsInfo(this.$route.query.q).then(val => {
+      this.playlist = val
+      this.playlist.creator.avatarUrl = val.creator.avatarUrl
     })
-    this.playlist = res.playlist
-    this.playlist.creator.avatarUrl = res.playlist.creator.avatarUrl
-
     // 全部歌曲
-    const { data: ress } = await this.$axios.get('/api/playlist/track/all', {
-      params: {
-        id: this.$route.query.q
-      }
+    this.$api.getAllMusic(this.$route.query.q).then(val => {
+      this.playlistAll = val
     })
-    this.playlistAll = ress.songs
-
     // 获取最新评论
     this.getNewComment()
     this.gethotcomment()
@@ -190,37 +183,26 @@ export default {
       this.$store.commit('playMusic')
     },
     async gethotcomment () {
-      // 获取热评
-      const { data: resone } = await this.$axios.get('/api/comment/hot', {
-        params: {
-          id: this.$route.query.q,
-          // 传递类型
-          type: 2
+      this.$api.gethotcomment(this.$route.query.q).then(val => {
+        this.hotComment = val.hotComments
+        this.hotCount = val.total
+        // 热评评论时间格式化
+        for (let i = 0; i < this.hotComment.length; i++) {
+          this.hotComment[i].time = this.$dayjs(val.hotComments[i].time).format('YYYY-MM-DD HH:mm:ss')
         }
       })
-      this.hotComment = resone.hotComments
-      this.hotCount = resone.total
-      // 热评评论时间格式化
-      for (let i = 0; i < this.hotComment.length; i++) {
-        this.hotComment[i].time = this.$dayjs(resone.hotComments[i].time).format('YYYY-MM-DD HH:mm:ss')
-      }
     },
     // 获取最新评论
     async getNewComment () {
-      const { data: restwo } = await this.$axios.get('/api/comment/playlist', {
-        params: {
-          id: this.$route.query.q,
-          limit: 10,
-          offset: (this.page - 1) * 10
+      this.$api.getNewComment(this.$route.query.q, this.page).then(val => {
+        // 总个数
+        this.total = val.total
+        // 评论数据
+        this.comments = val.comments
+        for (let i = 0; i < this.comments.length; i++) {
+          this.comments[i].time = this.$dayjs(val.comments[i].time).format('YYYY-MM-DD HH:mm:ss')
         }
       })
-      // 总个数
-      this.total = restwo.total
-      // 评论数据
-      this.comments = restwo.comments
-      for (let i = 0; i < this.comments.length; i++) {
-        this.comments[i].time = this.$dayjs(restwo.comments[i].time).format('YYYY-MM-DD HH:mm:ss')
-      }
     },
     async handleCurrentChange (val) {
       // console.log(`当前页: ${val}`)
@@ -228,22 +210,7 @@ export default {
       this.page = val
       // 重新获取数据
       // 获取最新评论
-      const { data: restwo } = await this.$axios.get('/api/comment/playlist', {
-        params: {
-          id: this.$route.query.q,
-          limit: 10,
-          // 根据页码计算
-          offset: (this.page - 1) * 10
-        }
-      })
-      // console.log(restwo)
-      // 总个数
-      this.total = restwo.total
-      // 评论数据
-      this.comments = restwo.comments
-      for (let i = 0; i < this.comments.length; i++) {
-        this.comments[i].time = this.$dayjs(restwo.comments[i].time).format('YYYY-MM-DD HH:mm:ss')
-      }
+      this.getNewComment()
     },
     toMv (id) {
       this.$router.push(`/home/mv?q=${id}`)
@@ -266,22 +233,22 @@ export default {
           return this.$message.info('已取消发送')
         }
 
-        const { data: res } = await this.$axios.get('/api/comment?', {
-          params: {
-            t: 1,
-            type: 2,
-            id: this.$route.query.q,
-            content: this.textarea
+        this.$api.sendComment(this.$route.query.q, this.textarea, this.type).then(val => {
+          if (val.code === 200) {
+            this.getNewComment()
+            this.textarea = ''
+            this.$message.success('评论成功')
+          } else {
+            const h = this.$createElement
+            this.$message({
+              type: 'error',
+              message: h('p', null, [
+                h('span', null, `${val.data.dialog.title} `),
+                h('span', { style: 'color: teal' }, val.data.dialog.subtitle)
+              ])
+            })
           }
         })
-        if (res.code === 200) {
-          // 在获取一遍最新评论数据 {此处直接调用方法评论不能实时显示 所以只能在请求一遍}
-          this.getNewComment()
-          this.textarea = ''
-          this.$message.success('评论成功')
-        } else {
-          return this.$message.error('评论失败')
-        }
       } else {
         this.$message.info('请先登录')
       }

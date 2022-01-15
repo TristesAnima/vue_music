@@ -14,7 +14,6 @@
       <el-table-column label="封面">
         <template slot-scope="scope">
           <el-image :src="scope.row.album.picUrl" lazy></el-image>
-          <!-- <span @click="playMusic(scope.row.id)" class="iconfont icon-play"></span> -->
         </template>
       </el-table-column>
       <el-table-column label="音乐标题">
@@ -57,25 +56,22 @@ export default {
   methods: {
     // 获取列表数据
     async getList () {
-      const { data: res } = await this.$axios.get('/api/top/song', {
-        params: {
-          type: this.type
+      this.$api.getLists(this.type).then(val => {
+        this.lists = val
+        // 处理时长 毫秒 => 分秒
+        for (let i = 0; i < this.lists.length; i++) {
+          const duration = this.lists[i].duration
+          // 毫秒 s/1000
+          // 分 m/60
+          // 秒 350 % 60
+          let min = parseInt(duration / 1000 / 60)
+          min = min < 10 ? '0' + min : min
+          let sec = parseInt((duration / 1000) % 60)
+          sec = sec < 10 ? '0' + sec : sec
+          // console.log(min + '|' + sec)
+          this.lists[i].duration = `${min}:${sec}`
         }
       })
-      this.lists = res.data
-      // 处理时长 毫秒 => 分秒
-      for (let i = 0; i < this.lists.length; i++) {
-        const duration = this.lists[i].duration
-        // 毫秒 s/1000
-        // 分 m/60
-        // 秒 350 % 60
-        let min = parseInt(duration / 1000 / 60)
-        min = min < 10 ? '0' + min : min
-        let sec = parseInt((duration / 1000) % 60)
-        sec = sec < 10 ? '0' + sec : sec
-        // console.log(min + '|' + sec)
-        this.lists[i].duration = `${min}:${sec}`
-      }
     },
     // 播放歌曲
     async playMusic (val) {

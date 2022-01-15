@@ -94,25 +94,17 @@ export default {
   methods: {
     // 获取列表数据
     async getList () {
-      const { data: res } = await this.$axios.get('/api/mv/all', {
-        params: {
-          area: this.area,
-          type: this.type,
-          order: this.order,
-          //  数量
-          limit: this.limit,
-          //  偏移值
-          offset: (this.page - 1) * this.limit
+      this.$api.getMvLists(this.area, this.type, this.order, this.limit, this.page).then(val => {
+        this.list = val
+
+        for (let i = 0; i < this.list.length; i++) {
+          this.list[i].playCount = parseInt(this.list[i].playCount / 10000) + '万'
+        }
+        // 接口问题
+        if (val.count) {
+          this.total = val.count
         }
       })
-      this.list = res.data
-      for (let i = 0; i < this.list.length; i++) {
-        this.list[i].playCount = parseInt(this.list[i].playCount / 10000) + '万'
-      }
-      // 接口问题
-      if (res.count) {
-        this.total = res.count
-      }
     },
     // 页码改变的回调函数
     handleCurrentChange (val) {

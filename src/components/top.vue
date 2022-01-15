@@ -194,10 +194,6 @@ export default {
     async hotSearch () {
       const { data: res } = await this.$axios.get('/api/search/hot/detail')
       this.hotResult = res.data
-      // 音乐播放热度
-      for (let i = 0; i < this.hotResult.length; i++) {
-        this.hotResult[i].score = parseInt(this.hotResult[i].score / 10000) + '万'
-      }
     },
     tologin () {
       this.$router.push('/tologin')

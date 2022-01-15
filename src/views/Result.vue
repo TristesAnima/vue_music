@@ -108,7 +108,6 @@ export default {
       activeIndex: 'songs',
       // 保存 查询歌曲
       songList: [],
-      qqsongList: [],
       // 保存歌单的字段
       playlists: [],
       // 保存mv的字段
@@ -130,7 +129,6 @@ export default {
   },
   // 侦听器
   watch: {
-    // 网易云
     activeIndex () {
       this.page = 1
       this.allclass()
@@ -147,32 +145,9 @@ export default {
   },
   // 方法
   methods: {
-    async getQQMusic () {
-      const { data: qqres } = await this.$axios.get(`${this.qqapi}/getSearchByKey`, {
-        params: {
-          key: this.$route.query.q,
-          remoteplace: 'song',
-          limit: 10,
-          page: this.page
-        }
-      })
-      this.qqsongList = qqres.response.data.song.list
-      this.count = qqres.response.data.song.totalnum
-    },
     searchresult () {
-      this.$axios({
-        url: '/api/cloudsearch',
-        method: 'get',
-        params: {
-          keywords: this.$route.query.q,
-          type: 1,
-          // 获取的数据量
-          limit: this.limit,
-          offset: (this.page - 1) * this.limit
-        }
-      }).then(res => {
-        this.songList = res.data.result.songs
-        // 计算歌曲时间
+      this.$api.searchres(this.$route.query.q, this.limit, this.page).then(val => {
+        this.songList = val.songs
         this.$nextTick(() => {
           for (let i = 0; i < this.songList.length; i++) {
             let min = parseInt(this.songList[i].dt / 1000 / 60)
@@ -187,7 +162,7 @@ export default {
           }
         })
         // 保存总数
-        this.count = res.data.result.songCount
+        this.count = val.songCount
       })
     },
     // 获取其他分类

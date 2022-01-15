@@ -1,6 +1,6 @@
 <template>
   <div class="personlist-container">
-    <div class="items" v-show="show">
+    <div class="items">
       <div class="item" v-for="item in personlist" :key="item.id">
         <div class="img-wrap" @click="toplaylist(item.id)">
           <img :src="item.coverImgUrl" alt="点击进入歌单">
@@ -19,23 +19,14 @@
 export default {
   data () {
     return {
-      personlist: [],
-      show: false
+      personlist: []
     }
   },
   async created () {
     const { data: resfour } = await this.$axios.get('/api/login/status')
     if (resfour.data.profile !== null && resfour.data.account !== null) {
-      this.$axios({
-        url: '/api/user/playlist',
-        method: 'get',
-        params: {
-          uid: resfour.data.profile.userId
-        }
-      }).then(res => {
-        // console.log(res.data.playlist)
-        this.personlist = res.data.playlist
-        this.show = true
+      this.$api.getPersonMusicList(resfour.data.profile.userId).then(val => {
+        this.personlist = val
       })
     }
   },

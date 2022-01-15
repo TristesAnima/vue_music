@@ -26,7 +26,7 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       '/api': {
-        target: 'http://localhost:3000', // 注意！此处为后端提供的真实接口
+        target: 'http://chcmusic.cloud:3000/', // 注意！此处为后端提供的真实接口
         changeOrigin: true, // 允许跨域
         pathRewrite: {
           // 如果接口中是没有api的，那就直接置空，'^/api': ''，

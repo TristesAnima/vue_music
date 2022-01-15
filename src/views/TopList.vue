@@ -26,7 +26,7 @@ export default {
     return {
       // 储存获取数据
       toplist: [],
-      musicList: [],
+      // musicList: [],
       loading: true
     }
   },
@@ -35,18 +35,18 @@ export default {
   },
   methods: {
     async getTopList () {
-      const { data: res } = await this.$axios.get('/api/toplist')
-      this.toplist = res.list
-
-      setTimeout(async () => {
-        const { data: resone } = await this.$axios.get('/api/playlist/track/all', {
-          params: {
-            id: res.list[0].id,
-            limit: 7
-          }
-        })
-        this.musicList = resone.songs
-      }, 2000)
+      this.$api.getTopLists().then(val => {
+        this.toplist = val
+      })
+      // setTimeout(async () => {
+      //   const { data: resone } = await this.$axios.get('/api/playlist/track/all', {
+      //     params: {
+      //       id: res.list[0].id,
+      //       limit: 7
+      //     }
+      //   })
+      //   this.musicList = resone.songs
+      // }, 2000)
     },
     toPlayList (id) {
       this.$router.push(`/home/playlist?q=${id}`)

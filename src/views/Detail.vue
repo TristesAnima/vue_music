@@ -146,8 +146,6 @@ export default {
 
       UploadPhotoDialogVisible: false,
       editUserDialogVisible: false,
-      // 时间戳
-      timestamp: new Date().getTime(),
       userDetail: {},
       // 关注
       follows: [],
@@ -304,7 +302,7 @@ export default {
     },
     // 听歌经验条
     format (percentage) {
-      return percentage === 100 ? '以达到' : `${percentage}%`
+      return percentage === 100 ? '已达到' : `${percentage}%`
     },
     // 修改用户信息
     async editUserDetail () {
