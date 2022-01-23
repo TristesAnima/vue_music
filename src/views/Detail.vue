@@ -94,7 +94,7 @@
     <el-dialog title="修改用户信息" :visible.sync="editUserDialogVisible" width="50%" style="margin-top: -40px;">
       <el-form class="userform" ref="editForm" :model="editDetail" :rules="addFormRules" label-width="140px">
         <el-form-item label="昵称" prop="nickname">
-            <el-input class="input" v-model="editDetail.nickname"></el-input>
+          <el-input class="input" v-model="editDetail.nickname"></el-input>
         </el-form-item>
         <el-form-item label="性别" prop="gender">
           <el-input class="input" v-model="editDetail.gender"></el-input>
@@ -219,42 +219,43 @@ export default {
   methods: {
     // 个人信息
     async detail () {
-      const { data: res } = await this.$axios.get('/api/user/account')
-      if (res.code !== 200) {
-        return this.$message.error('获取用户信息失败')
-      }
-      switch (res.profile.gender) {
-        case 0:
-          res.profile.gender = '保密'
-          break
-        case 1:
-          res.profile.gender = '男'
-          break
-        case 2:
-          res.profile.gender = '女'
-          break
-      }
-      this.userDetail = res.profile
-      // 签名
-      this.userDetail.signature = res.profile.signature
-      // 生日
-      this.userDetail.birthday = this.$dayjs(res.profile.birthday).format('YYYY-MM-DD HH:mm:ss')
-      // 格式化账号创建时间
-      this.userDetail.createTime = this.$dayjs(res.profile.createTime).format('YYYY-MM-DD HH:mm:ss')
-      // 格式化用户最后登录时间
-      this.userDetail.lastLoginTime = this.$dayjs(res.profile.lastLoginTime).format('YYYY-MM-DD HH:mm:ss')
+      this.$api.detail().then(async res => {
+        if (res.code !== 200) {
+          return this.$message.error('获取用户信息失败')
+        }
+        switch (res.profile.gender) {
+          case 0:
+            res.profile.gender = '保密'
+            break
+          case 1:
+            res.profile.gender = '男'
+            break
+          case 2:
+            res.profile.gender = '女'
+            break
+        }
+        this.userDetail = res.profile
+        // 签名
+        this.userDetail.signature = res.profile.signature
+        // 生日
+        this.userDetail.birthday = this.$dayjs(res.profile.birthday).format('YYYY-MM-DD HH:mm:ss')
+        // 格式化账号创建时间
+        this.userDetail.createTime = this.$dayjs(res.profile.createTime).format('YYYY-MM-DD HH:mm:ss')
+        // 格式化用户最后登录时间
+        this.userDetail.lastLoginTime = this.$dayjs(res.profile.lastLoginTime).format('YYYY-MM-DD HH:mm:ss')
 
-      // 等级api接口
-      const { data: reslevel } = await this.$axios.get('/api/user/level')
-      this.level = reslevel.data.level
-      /* 听歌经验条 还差多少经验升级 */
-      this.userexe.progress = Number(parseFloat(reslevel.data.progress).toFixed(2) * 100) /* 保留小数点后两位四舍五入 */
-      // 还差多少首歌升级
-      this.userexe.musicflPer = Number(parseFloat(reslevel.data.nowPlayCount / reslevel.data.nextPlayCount).toFixed(2) * 100) /* 百分比 */
-      this.userexe.musicfl = reslevel.data.nextPlayCount - reslevel.data.nowPlayCount
-      // 还差登录多少天升级
-      this.userexe.loginDay = reslevel.data.nextLoginCount - reslevel.data.nowLoginCount
-      this.userexe.loginDayPer = Number(parseFloat(reslevel.data.nextLoginCount / reslevel.data.nowLoginCount).toFixed(2) * 100) /* 百分比 */
+        // 等级api接口
+        const { data: reslevel } = await this.$axios.get('/api/user/level')
+        this.level = reslevel.data.level
+        /* 听歌经验条 还差多少经验升级 */
+        this.userexe.progress = Number(parseFloat(reslevel.data.progress).toFixed(2) * 100) /* 保留小数点后两位四舍五入 */
+        // 还差多少首歌升级
+        this.userexe.musicflPer = Number(parseFloat(reslevel.data.nowPlayCount / reslevel.data.nextPlayCount).toFixed(2) * 100) /* 百分比 */
+        this.userexe.musicfl = reslevel.data.nextPlayCount - reslevel.data.nowPlayCount
+        // 还差登录多少天升级
+        this.userexe.loginDay = reslevel.data.nextLoginCount - reslevel.data.nowLoginCount
+        this.userexe.loginDayPer = Number(parseFloat(reslevel.data.nextLoginCount / reslevel.data.nowLoginCount).toFixed(2) * 100) /* 百分比 */
+      })
     },
     async watchs () {
       const { data: resfour } = await this.$axios.get('/api/login/status')
@@ -263,7 +264,7 @@ export default {
           uid: resfour.data.profile.userId
         }
       })
-      // 没有接口 在获取一遍总的条数
+      // 在获取一遍总的条数
       this.total1 = res1.follow.length
     },
     // 关注 粉丝 动态

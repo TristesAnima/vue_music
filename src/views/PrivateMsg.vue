@@ -40,15 +40,14 @@ export default {
   },
   methods: {
     async getPrivsteMsg () {
-      const { data: res } = await this.$axios.get('/api/msg/private', {
-        limit: 30
+      this.$api.getPrivateMsg().then(res => {
+        if (res.code === 200) {
+          this.privatemsgs = res.msgs
+          this.$message.success('获取私信成功')
+        } else {
+          this.$message.success('服务器打瞌睡了!请稍后重试')
+        }
       })
-      if (res.code === 200) {
-        this.privatemsgs = res.msgs
-        this.$message.success('获取私信成功')
-      } else {
-        this.$message.success('服务器打瞌睡了!请稍后重试')
-      }
     },
     tosendmsg (id) {
       this.$router.push(`/home/sendmsg?q=${id}`)

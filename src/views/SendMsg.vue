@@ -62,20 +62,17 @@ export default {
   },
   methods: {
     async getUserDeatail () {
-      const { data: res } = await this.$axios.get('/api/msg/private/history', {
-        params: {
-          uid: this.$route.query.q
+      this.$api.getUserDeatail(this.$route.query.q).then(res => {
+        if (res.code === 200) {
+          this.historymsg = res.msgs
+          for (let i = 0; i < res.msgs.length; i++) {
+            this.historymsg[i].time = this.$dayjs(this.historymsg[i].time).format('MM-DD HH:mm:ss')
+          }
+          this.$message.success('获取信息成功')
+        } else {
+          this.$message.error('获取信息失败')
         }
       })
-      if (res.code === 200) {
-        this.historymsg = res.msgs
-        for (let i = 0; i < res.msgs.length; i++) {
-          this.historymsg[i].time = this.$dayjs(this.historymsg[i].time).format('MM-DD HH:mm:ss')
-        }
-        this.$message.success('获取信息成功')
-      } else {
-        this.$message.error('获取信息失败')
-      }
     },
     // 去歌单页面
     toplaylist (id) {

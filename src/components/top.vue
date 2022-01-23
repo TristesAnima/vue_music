@@ -10,7 +10,7 @@
       <div class="icon-wrapper">
         <span class="iconfont icon-home" @click="home"></span>
         <div class="icon">
-          <img src="../assets/019-music.svg">
+          <img src="../assets/cat.svg">
         </div>
       </div>
       <div class="history-wrapper">
@@ -34,7 +34,8 @@
           <div v-for="(item,index) in hotResult" :key="item.score" class="hover" @click="toresult(item.searchWord)">
             <span>{{index+=1}}. </span>
             <span>{{item.searchWord}}</span>
-            <span style="float: right; color: red;">{{ item.score }}<i class="el-icon-sugar"></i></span>
+            <span>{{ item.score }}</span>
+            <div class="content">{{ item.content }}</div>
           </div>
         </div>
         <!-- 搜索后的提示 -->

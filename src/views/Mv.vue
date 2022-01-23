@@ -146,7 +146,8 @@ export default {
       // 普通评论
       comments: [],
       // 评论内容
-      textarea: ''
+      textarea: '',
+      type: 1
     }
   },
   created () {
@@ -167,22 +168,14 @@ export default {
   },
   methods: {
     async mvurl () {
-      const { data: res } = await this.$axios.get('/api/mv/url', {
-        params: {
-          // 获取 url 中的id
-          id: this.$route.query.q
-        }
+      this.$api.mvurl(this.$route.query.q).then(val => {
+        this.url = val
       })
-      this.url = res.data.url
     },
     async simiMv () {
-      // 获取相关的mv
-      const { data: resone } = await this.$axios.get('/api/simi/mv', {
-        params: {
-          mvid: this.$route.query.q
-        }
+      this.$api.simiMvs(this.$route.query.q).then(val => {
+        this.simiMvs = val
       })
-      this.simiMvs = resone.mvs
       // 时间格式化
       for (let i = 0; i < this.simiMvs.length; i++) {
         const duration = this.simiMvs[i].duration
@@ -199,42 +192,34 @@ export default {
     },
     async mvsInfo () {
       // 获取 mv 的信息
-      const { data: restwo } = await this.$axios.get('/api/mv/detail', {
-        params: {
-          mvid: this.$route.query.q
-        }
-      })
-      this.mvInfo = restwo.data
-      if (this.mvInfo) {
+      this.$api.mvsInfo(this.$route.query.q).then(async val => {
+        this.mvInfo = val
+        if (this.mvInfo != null) {
         // 获取 歌手 信息
-        const { data: resthree } = await this.$axios.get('/api/artists', {
-          params: {
-            id: this.mvInfo.artists[0].id
-          }
-        })
-        this.icon = resthree.artist.picUrl
-      }
-    },
-    // 获取最新评论
-    async getNewComment () {
-      // 获取评论数据
-      const { data: resfour } = await this.$axios.get('/api/comment/mv', {
-        params: {
-          id: this.$route.query.q,
-          limit: 10
+          const { data: resthree } = await this.$axios.get('/api/artists', {
+            params: {
+              id: val.artistId
+            }
+          })
+          this.icon = resthree.artist.picUrl
         }
       })
-      this.comments = resfour.comments
-      this.total = resfour.total
-      this.hotComment = resfour.hotComments
-      // 普通评论时间格式化
-      for (let i = 0; i < this.comments.length; i++) {
-        this.comments[i].time = this.$dayjs(resfour.comments[i].time).format('YYYY-MM-DD HH:mm:ss')
-      }
-      // 热评评论时间格式化
-      for (let i = 0; i < this.hotComment.length; i++) {
-        this.hotComment[i].time = this.$dayjs(resfour.hotComments[i].time).format('YYYY-MM-DD HH:mm:ss')
-      }
+    },
+    // 获取评论
+    async getNewComment () {
+      this.$api.getMvNewComment(this.$route.query.q).then(val => {
+        this.comments = val.comments
+        this.total = val.total
+        this.hotComment = val.hotComments
+        // 普通评论时间格式化
+        for (let i = 0; i < this.comments.length; i++) {
+          this.comments[i].time = this.$dayjs(val.comments[i].time).format('YYYY-MM-DD HH:mm:ss')
+        }
+        // 热评评论时间格式化
+        for (let i = 0; i < this.hotComment.length; i++) {
+          this.hotComment[i].time = this.$dayjs(val.hotComments[i].time).format('YYYY-MM-DD HH:mm:ss')
+        }
+      })
     },
     // 发送评论
     async sendComment () {
@@ -253,22 +238,22 @@ export default {
           return this.$message.info('已取消发送')
         }
 
-        const { data: res } = await this.$axios.get('/api/comment', {
-          params: {
-            t: 1,
-            type: 1,
-            id: this.$route.query.q,
-            content: this.textarea
+        this.$api.sendComment(this.$route.query.q, this.textarea, this.type).then(val => {
+          if (val.code === 200) {
+            this.getNewComment()
+            this.textarea = ''
+            this.$message.success('评论成功')
+          } else {
+            const h = this.$createElement
+            this.$message({
+              type: 'error',
+              message: h('p', null, [
+                h('span', null, `${val.data.dialog.title} `),
+                h('span', { style: 'color: teal' }, val.data.dialog.subtitle)
+              ])
+            })
           }
         })
-        if (res.code === 200) {
-          // 在获取一遍最新评论数据 {此处直接调用方法评论不能实时显示 所以只能在请求一遍}
-          this.getNewComment()
-          this.textarea = ''
-          this.$message.success('评论成功')
-        } else {
-          return this.$message.error('评论失败')
-        }
       } else {
         this.$message.info('请先登录')
       }
@@ -278,19 +263,7 @@ export default {
       this.page = val
       // 重新获取数据
       // 获取最新评论
-      const { data: resfour } = await this.$axios.get('/api/comment/mv', {
-        params: {
-          id: this.$route.query.q,
-          limit: 10,
-          offset: (this.page - 1) * 10
-        }
-      })
-      this.total = resfour.total
-      this.comments = resfour.comments
-      this.hotComment = resfour.hotComments
-      for (let i = 0; i < this.comments.length; i++) {
-        this.comments[i].time = this.$dayjs(resfour.comments[i].time).format('YYYY-MM-DD HH:mm:ss')
-      }
+      this.getNewComment()
     },
     async playmv (id) {
       // // 跳转并携带数据即可

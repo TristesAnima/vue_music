@@ -1,5 +1,5 @@
 <template>
-  <div class="index-container" id="top">
+  <div class="index-container">
     <el-aside>
       <el-menu :default-active="this.$route.path" :router="true" mode="horizontal" active-text-color="#f42609" class="el-menu-vertical-demo">
         <el-menu-item index="/home/discovery">
@@ -48,9 +48,20 @@
     </el-aside>
     <el-main>
       <router-view class="mainsc"></router-view>
-      <div class="toTop" @click="backTop" style="{height: 40px;width: 40px;background-color: #f2f5f6;box-shadow: 0 0 6px rgba(0,0,0, .12);text-align: center;line-height: 40px;color: #1989fa;}">
-        UP
-      </div>
+      <el-backtop target="" :bottom="100" :right="5">
+        <div style="{
+        height: 100%;
+        width: 100%;
+        background-color: #f2f5f6;
+        border-radius: 5px;
+        box-shadow: 0 0 6px rgba(0,0,0, .12);
+        text-align: center;
+        line-height: 40px;
+        color: #1989fa;
+      }">
+          UP
+        </div>
+      </el-backtop>
       <div class="law">
         <p>本网站 接口 素材 均来自网络</p>
         <p>如有侵权请联系邮箱删除 chc2075983104@163.com</p>
@@ -102,15 +113,23 @@ export default {
     }
   },
   methods: {
-    backTop () {
-      const h = this.$createElement
-      this.$message({
-        message: h('p', null, [
-          h('span', null, '功能暂未开发 '),
-          h('i', { style: 'color: teal' }, '来自Element ui')
-        ])
-      })
-    }
+    // backTop () {
+    //   // const h = this.$createElement
+    //   // this.$message({
+    //   //   message: h('p', null, [
+    //   //     h('span', null, '功能暂未开发 '),
+    //   //     h('i', { style: 'color: teal' }, '来自Element ui')
+    //   //   ])
+    //   // })
+    //   let top = document.documentElement.scrollTop || document.body.scrollTop
+    //   // 实现滚动效果
+    //   const timeTop = setInterval(() => {
+    //     document.body.scrollTop = document.documentElement.scrollTop = top -= 50 + 3
+    //     if (top <= 0) {
+    //       clearInterval(timeTop)
+    //     }
+    //   }, 10)
+    // }
   }
 }
 </script>

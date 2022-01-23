@@ -1371,7 +1371,9 @@ ol {
   top: 35px;
   left: 0;
   right: 0;
+  height: 75vh;
   box-shadow: 0 2px 12px 0 rb(0 0 0 / 10%);
+  overflow: scroll;
   z-index: 999;
 }
 
@@ -1399,12 +1401,35 @@ ol {
 }
 
 .top-container .right-box .el-popover .hotresult .hover {
-  padding: 2px 0;
+  padding: 2px;
 }
 
 .top-container .right-box .el-popover .hotresult .hover:hover {
   background-color: #dbdad4;
   border-radius: 4px;
+}
+
+.top-container .right-box .el-popover .hotresult .hover span:nth-child(1) {
+  text-align: center;
+}
+
+.top-container .right-box .el-popover .hotresult .hover span:nth-child(2) {
+  text-align: center;
+  color: black;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.top-container .right-box .el-popover .hotresult .hover span:nth-child(3) {
+  margin-left: 10px;
+  font-size: 11px;
+  color: #c2c2c2;
+  vertical-align: bottom;
+}
+
+.top-container .right-box .el-popover .hotresult .hover .content {
+  margin-left: 15px;
+  font-size: 12px;
 }
 
 .top-container .loginBtn {
@@ -1433,6 +1458,7 @@ ol {
 .top-container .loginBtn .ziti {
   display: inline-block;
   transform: translate(4px, -4px);
+  font-weight: 200;
 }
 
 .top-container .login-wrap {

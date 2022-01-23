@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-// discovery页面----------------------------------------------------------------------------------------------
+// discovery页面------------------------------------------------------------------------------------------------------------------------------------------------
 // 轮播图
 export const getBanners = async () => {
   const { data: res } = await axios.get('/api/banner')
@@ -27,7 +27,7 @@ export const recommandMv = async () => {
   return res.result
 }
 
-// playlists 界面----------------------------------------------------------------------------------------------
+// playlists 界面---------------------------------------------------------------------------------------------------------------------------------------------------
 // 顶部显示
 export const topDatas = async (tag) => {
   const { data: res } = await axios.get('/api/top/playlist/highquality', {
@@ -51,7 +51,7 @@ export const listDatas = async (page, tag) => {
   return res
 }
 
-// songs 界面----------------------------------------------------------------------------------------------
+// songs 界面------------------------------------------------------------------------------------------------------------------------------------------------------
 export const getLists = async (type) => {
   const { data: res } = await axios.get('/api/top/song', {
     params: {
@@ -61,7 +61,7 @@ export const getLists = async (type) => {
   return res.data
 }
 
-// Mvs 界面----------------------------------------------------------------------------------------------
+// Mvs 界面--------------------------------------------------------------------------------------------------------------------------------------------------------
 export const getMvLists = async (area, type, order, limit, page) => {
   const { data: res } = await axios.get('/api/mv/all', {
     params: {
@@ -77,13 +77,13 @@ export const getMvLists = async (area, type, order, limit, page) => {
   return res.data
 }
 
-// topList 界面----------------------------------------------------------------------------------------------
+// topList 界面----------------------------------------------------------------------------------------------------------------------------------------------------
 export const getTopLists = async () => {
   const { data: res } = await axios.get('/api/toplist')
   return res.list
 }
 
-// 歌手界面----------------------------------------------------------------------------------------------
+// 歌手界面--------------------------------------------------------------------------------------------------------------------------------------------------------
 export const getSinger = async (type, area, limit, page) => {
   const { data: res } = await axios.get('/api/artist/list', {
     params: {
@@ -96,7 +96,7 @@ export const getSinger = async (type, area, limit, page) => {
   return res.artists
 }
 
-// 用户音乐列表----------------------------------------------------------------------------------------------
+// 用户音乐列表---------------------------------------------------------------------------------------------------------------------------------------------------
 export const getPersonMusicList = async (uid) => {
   const { data: res } = await axios.get('/api/user/playlist', {
     params: {
@@ -106,7 +106,7 @@ export const getPersonMusicList = async (uid) => {
   return res.playlist
 }
 
-// result界面----------------------------------------------------------------------------------------------
+// result界面---------------------------------------------------------------------------------------------------------------------------------------------------
 // 搜索结果api
 export const searchres = async (keywords, limit, page) => {
   const { data: res } = await axios.get('/api/cloudsearch', {
@@ -121,7 +121,7 @@ export const searchres = async (keywords, limit, page) => {
   return res.result
 }
 
-// playlist 界面----------------------------------------------------------------------------------------------
+// playlist 界面-------------------------------------------------------------------------------------------------------------------------------------
 // 封面信息
 export const getPlayListsInfo = async (id) => {
   const { data: res } = await axios.get('/api/playlist/detail', {
@@ -170,6 +170,69 @@ export const sendComment = async (id, textarea, type) => {
       id,
       content: textarea
     }
+  })
+  return res
+}
+
+// Mv 界面------------------------------------------------------------------------------------------------------------------------------------------------
+// mv 的 url
+export const mvurl = async (id) => {
+  const { data: res } = await axios.get('/api/mv/url', {
+    params: {
+      id
+    }
+  })
+  return res.data.url
+}
+// 获取相关的mv
+export const simiMvs = async (mvid) => {
+  const { data: res } = await axios.get('/api/simi/mv', {
+    params: {
+      mvid
+    }
+  })
+  return res.mvs
+}
+// 获取 mv 的信息
+export const mvsInfo = async (mvid) => {
+  const { data: res } = await axios.get('/api/mv/detail', {
+    params: {
+      mvid
+    }
+  })
+  return res.data
+}
+// 获取评论
+export const getMvNewComment = async (id) => {
+  const { data: res } = await axios.get('/api/comment/mv', {
+    params: {
+      id,
+      limit: 10
+    }
+  })
+  return res
+}
+
+// detail 界面---------------------------------------------------------------------------------------------------------------------------------------------
+export const detail = async () => {
+  const { data: res } = await axios.get('/api/user/account')
+  return res
+}
+
+// 发送私信界面---------------------------------------------------------------------------------------------------------------------------------------------
+export const getUserDeatail = async (uid) => {
+  const { data: res } = await axios.get('/api/msg/private/history', {
+    params: {
+      uid
+    }
+  })
+  return res
+}
+
+// 获取用户私信列表界面-------------------------------------------------------------------------------------------------------------------------------------
+export const getPrivateMsg = async () => {
+  const { data: res } = await axios.get('/api/msg/private', {
+    limit: 30
   })
   return res
 }

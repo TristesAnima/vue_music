@@ -20,9 +20,9 @@ npm run build
 https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi
 ```
 
-### github地址 后端服务
+### 后端服务接口
 ```
-https://github.com/Binaryify/NeteaseCloudMusicApi
+http://chcmusic.cloud:3000/ 或者 http://81.68.248.232:3000/
 ```
 
 ### 项目上线
