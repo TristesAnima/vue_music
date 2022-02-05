@@ -14,7 +14,7 @@
           <span class="time">{{ playlist.createTime }}</span>
         </div>
         <div class="play-wrap">
-          <span class="iconfont icon-circle-play"></span>
+          <span class="iconfont icon-bofang"></span>
           <span class="text">播放全部</span>
         </div>
         <div class="tag-wrap">
@@ -36,13 +36,17 @@
         <el-table :data="playlistAll" empty-text="Loading...." style="width: 100%" :header-cell-style="{'text-align':'center'}" :cell-style="{'text-align':'center'}" @row-click="playMusic">
           <el-table-column width="180">
             <template slot-scope="scope">
-              <img :src="scope.row.al.picUrl" alt="加载失败 尝试刷新吧!" style="width: 50px; height: 50px; border-radius: 5px">
+              <div class="plays-wrap">
+                <img :src="scope.row.al.picUrl" alt="加载失败 尝试刷新吧!" style="width: 50px; height: 50px; border-radius: 5px">
+                <span class="iconfont icon-bofang"></span>
+              </div>
             </template>
           </el-table-column>
           <el-table-column label="音乐标题" width="180">
             <template slot-scope="scope">
               {{ scope.row.name }}
-              <span v-if="scope.row.mv != 0" class="iconfont icon-mv" @click.stop.prevent="toMv(scope.row.mv)" style="color: red;margin: 6px 0 0 5px;"></span>
+              <span v-if="scope.row.mv != 0" class="iconfont icon-movie-line" @click.stop.prevent="toMv(scope.row.mv)" style="color: red;margin: 0 2px; display: inline-block; vertical-align: middle;"></span>
+              <span v-if="scope.row.fee === 1" class="span iconfont icon-VIP" style="color: red; font-size: 23px; display: inline-block; vertical-align: middle;"></span>
             </template>
           </el-table-column>
           <el-table-column label="歌手">
@@ -59,6 +63,7 @@
             不详
           </el-table-column>
         </el-table>
+
       </el-tab-pane>
 
       <el-tab-pane label="评论" name="2">
@@ -86,7 +91,7 @@
                       <!-- 昵称 -->
                       <span class="name">{{ item.user.nickname }}: </span>
                       <span class="comment">{{ item.content }}</span>
-                      <span class="likecount" @click="comeon(item.user.userId)"><i class="el-icon-sugar"></i>&nbsp;{{ item.likedCount }}</span>
+                      <span class="likecount" @click="comeon(item.user.userId)"><i class="iconfont icon-dianzan"></i>&nbsp;{{ item.likedCount }}</span>
                     </div>
                     <div class="re-content" v-if="item.beReplied.length != 0">
                       <!-- 评论的回复 -->
@@ -112,7 +117,7 @@
                     <div class="content">
                       <span class="name">{{ item.user.nickname }}：</span>
                       <span class="comment">{{ item.content }}</span>
-                      <span class="likecount" @click="comeon(item.user.userId)"><i class="el-icon-sugar"></i>&nbsp;{{ item.likedCount }}</span>
+                      <span class="likecount" @click="comeon(item.user.userId)"><i class="iconfont icon-dianzan"></i>&nbsp;{{ item.likedCount }}</span>
                     </div>
                     <div class="re-content" v-if="item.beReplied.length != 0">
                       <span class="name">{{ item.beReplied[0].user.nickname }}：</span>
@@ -143,6 +148,7 @@ export default {
       total: 0,
       // 页码
       page: 1,
+      limit: 25,
       // 歌单详情数据
       playlist: {
         creator: {
@@ -168,15 +174,18 @@ export default {
       this.playlist = val
       this.playlist.creator.avatarUrl = val.creator.avatarUrl
     })
-    // 全部歌曲
-    this.$api.getAllMusic(this.$route.query.q).then(val => {
-      this.playlistAll = val
-    })
+    this.allMusic()
     // 获取最新评论
     this.getNewComment()
     this.gethotcomment()
   },
   methods: {
+    allMusic () {
+      // 全部歌曲
+      this.$api.getAllMusic(this.$route.query.q, this.limit).then(val => {
+        this.playlistAll = val
+      })
+    },
     // 播放音乐
     async playMusic (row) {
       this.$store.state.mid = row.id
@@ -242,10 +251,7 @@ export default {
             const h = this.$createElement
             this.$message({
               type: 'error',
-              message: h('p', null, [
-                h('span', null, `${val.data.dialog.title} `),
-                h('span', { style: 'color: teal' }, val.data.dialog.subtitle)
-              ])
+              message: h('p', null, [h('span', null, `${val.data.dialog.title} `), h('span', { style: 'color: teal' }, val.data.dialog.subtitle)])
             })
           }
         })
@@ -255,22 +261,27 @@ export default {
     },
     // 点赞评论
     async comeon (id) {
-      const { data: res } = await this.$axios.get('/api/comment/like', {
-        params: {
-          id: this.$route.query.q,
-          cid: id,
-          type: 2,
-          t: 1
+      const { data: resfour } = await this.$axios.get('/api/login/status')
+      if (resfour.data.profile !== null && resfour.data.account !== null) {
+        const { data: res } = await this.$axios.get('/api/comment/like', {
+          params: {
+            id: this.$route.query.q,
+            cid: id,
+            type: 2,
+            t: 1
+          }
+        })
+        if (res.code === 200) {
+          document.querySelector('.likecount').style.color = 'red'
+          this.getNewComment()
+          this.gethotcomment()
+          this.$message.info(res.msg)
+        } else {
+          document.querySelector('.likecount').style.color = '#c7c9cc'
+          this.$message.error('点赞失败')
         }
-      })
-      if (res.code === 200) {
-        document.querySelector('.likecount').style.color = 'red'
-        this.getNewComment()
-        this.gethotcomment()
-        this.$message.info(res.msg)
       } else {
-        document.querySelector('.likecount').style.color = '#c7c9cc'
-        this.$message.error('点赞失败')
+        this.$message.error('请先登录在进行评论')
       }
     }
   }

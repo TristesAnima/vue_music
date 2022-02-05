@@ -1,14 +1,12 @@
 <template>
   <div class="personlist-container">
     <div class="items">
-      <div class="item" v-for="item in personlist" :key="item.id">
-        <div class="img-wrap" @click="toplaylist(item.id)">
-          <img :src="item.coverImgUrl" alt="点击进入歌单">
-          <div class="info">
-            <span class="playlistname">{{ item.name }}</span>
-            <span class="playcount">播放次数:{{ item.playCount }}</span>
-            <span class="trackcount">总数:{{ item.trackCount }}</span>
-          </div>
+      <div class="item" v-for="item in personlist" :key="item.id" @click="toplaylist(item.id)">
+        <img :src="item.coverImgUrl" alt="">
+        <div class="info">
+          <span class="playlistname">{{ item.name }}</span>
+          <span class="playcount">{{ item.playCount }}</span>
+          <span class="trackcount">总数:{{ item.trackCount }}</span>
         </div>
       </div>
     </div>

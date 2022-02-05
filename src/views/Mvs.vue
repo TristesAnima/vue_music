@@ -32,8 +32,8 @@
         <div class="item" v-for="item in list" :key="item.id" @click="toMv(item.id)">
           <el-image :src="item.cover"></el-image>
           <div class="num-wrap">
-            <div class="iconfont icon-play"></div>
             <div class="num">{{ item.playCount }}</div>
+            <div class="iconfont icon-bofang"></div>
           </div>
           <div class="info-wrap">
             <div class="name">{{ item.name }}</div>
@@ -96,10 +96,6 @@ export default {
     async getList () {
       this.$api.getMvLists(this.area, this.type, this.order, this.limit, this.page).then(val => {
         this.list = val
-
-        for (let i = 0; i < this.list.length; i++) {
-          this.list[i].playCount = parseInt(this.list[i].playCount / 10000) + '万'
-        }
         // 接口问题
         if (val.count) {
           this.total = val.count

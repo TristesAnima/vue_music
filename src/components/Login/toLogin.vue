@@ -116,6 +116,7 @@ export default {
                 key: window.sessionStorage.getItem('unikey')
               }
             })
+            console.log(restwo)
             switch (restwo.code) {
               case 800:
                 this.statusText = restwo.message

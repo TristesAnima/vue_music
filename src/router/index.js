@@ -54,20 +54,17 @@ const router = new VueRouter({
 // 路由开始跳转时
 router.beforeEach(function (to, from, next) {
   if (arr.indexOf(to.path) !== -1) {
-    Vue.prototype.$axios.get(`/api/login/status?${new Date().getTime()}`).then((res) => {
+    Vue.prototype.$axios.get('/api/login/status').then((res) => {
       if (res.data.data.profile !== null && res.data.data.account !== null) {
-        // NProgress.start()
         next()
         window.scrollTo(0, 0)
       } else {
-        Vue.prototype.$message.warning('您还没有登录,请您先登录')
-        // NProgress.start()
+        Vue.prototype.$message.warning('您还没有登录,请先登录')
         window.scrollTo(0, 0)
         next('/tologin')
       }
     })
   } else {
-    // NProgress.start()
     next()
     window.scrollTo(0, 0)
   }
@@ -76,7 +73,6 @@ router.beforeEach(function (to, from, next) {
 // 当路由跳转结束后
 router.afterEach(() => {
   // 关闭进度条
-  // NProgress.done()
 })
 
 export default router

@@ -21,10 +21,10 @@
             </div>
             <img :src="item.picUrl" alt="" />
             <div class="num-wrap">
-              <div class="iconfont icon-play"></div>
               <div class="num">{{ item.playCount }}</div>
+              <div class="iconfont icon-24gf-play"></div>
             </div>
-            <span class="iconfont icon-play"></span>
+            <span class="iconfont icon-24gf-play"></span>
           </div>
           <p class="name">{{ item.name }}</p>
         </div>
@@ -36,20 +36,23 @@
       <h3 class="title">
         最新音乐
       </h3>
-      <div class="items">
-        <div class="item" v-for="item in music" :key="item.id">
-          <div class="img-wrap">
-            <img :src="item.picUrl" alt="" />
-            <span @click="playMusic(item.id)" class="iconfont icon-play"></span>
-          </div>
-          <div class="song-wrap">
-            <!-- 歌名 -->
-            <div class="song-name">{{ item.name }}</div>
-            <!-- 歌手名 -->
-            <div class="singer">{{ item.song.artists[0].name }}</div>
-          </div>
-        </div>
-      </div>
+      <el-table :data="music" empty-text="Loading...." style="width: 100%" @row-click="playMusic">
+        <el-table-column>
+          <template slot-scope="scope">
+            <div class="img-wrap">
+              <el-image style="width: 100%; border-radius: 5px;" :src="scope.row.picUrl" lazy></el-image>
+              <span class="iconfont icon-bofang"></span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="name" label="歌名" width="500">
+        </el-table-column>
+        <el-table-column label="歌手">
+          <template slot-scope="scope">
+            {{ scope.row.song.artists[0].name }}
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
 
     <!-- 推荐MV -->
@@ -59,9 +62,9 @@
         <div class="item" v-for="item in mvs" :key="item.id" @click="tuijianmv(item.id)">
           <div class="img-wrap">
             <img :src="item.picUrl" alt="" />
-            <span class="iconfont icon-play"></span>
+            <span class="iconfont icon-24gf-play"></span>
             <div class="num-wrap">
-              <div class="iconfont icon-play"></div>
+              <div class="iconfont icon-24gf-play"></div>
               <div class="num">{{ item.playCount }}</div>
             </div>
           </div>
@@ -92,37 +95,29 @@ export default {
   },
   async created () {
     // 轮播图接口
-    this.$api
-      .getBanners()
-      .then(response => {
-        this.banners = response
-      })
+    this.$api.getBanners().then(response => {
+      this.banners = response
+    })
     // 推荐歌单接口
-    this.$api
-      .recommandLists()
-      .then(response => {
-        this.list = response
-        // 音乐的播放次数
-        for (let i = 0; i < this.list.length; i++) {
-          this.list[i].playCount = parseInt(this.list[i].playCount / 10000) + '万'
-        }
-      })
+    this.$api.recommandLists().then(response => {
+      this.list = response
+      // 音乐的播放次数
+      for (let i = 0; i < this.list.length; i++) {
+        this.list[i].playCount = parseInt(this.list[i].playCount / 10000) + '万'
+      }
+    })
     // 推荐音乐
-    this.$api
-      .recommandMusic()
-      .then(response => {
-        this.music = response
-      })
+    this.$api.recommandMusic().then(response => {
+      this.music = response
+    })
     // 最新mv
-    this.$api
-      .recommandMv()
-      .then(response => {
-        this.mvs = response
-      })
+    this.$api.recommandMv().then(response => {
+      this.mvs = response
+    })
   },
   methods: {
-    async playMusic (id) {
-      this.$store.state.mid = id
+    async playMusic (val) {
+      this.$store.state.mid = val.id
       this.$store.commit('playMusic')
     },
     tuijiangedan (id) {

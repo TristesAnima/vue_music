@@ -169,8 +169,8 @@ export default {
       this.allmusic()
     },
     async play (id) {
-      this.$store.commit('playMusic')
       this.$store.state.mid = id
+      this.$store.commit('playMusic')
     },
     toMv (id) {
       this.$router.push(`/home/mv?q=${id}`)

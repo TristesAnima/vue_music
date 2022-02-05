@@ -51,7 +51,7 @@
                   <div class="content">
                     <span class="name">{{ item.user.nickname }}: </span>
                     <span class="comment">{{ item.content }}</span>
-                    <span class="likecount" @click="comeon(item.user.userId)"><i class="el-icon-sugar"></i>&nbsp;{{ item.likedCount }}</span>
+                    <span class="likecount" @click="comeon(item.user.userId)"><i class="iconfont icon-dianzan"></i>&nbsp;{{ item.likedCount }}</span>
                   </div>
                   <div class="re-content" v-if="item.beReplied.length != 0">
                     <span class="name">{{ item.beReplied[0].user.nickname }}：</span>
@@ -74,7 +74,7 @@
                   <div class="content">
                     <span class="name">{{ item.user.nickname }}：</span>
                     <span class="comment">{{ item.content }}</span>
-                    <span class="likecount" @click="comeon(item.user.userId)"><i class="el-icon-sugar"></i>&nbsp;{{ item.likedCount }}</span>
+                    <span class="likecount" @click="comeon(item.user.userId)"><i class="iconfont icon-dianzan"></i>&nbsp;{{ item.likedCount }}</span>
                   </div>
                   <div class="re-content" v-if="item.beReplied.length != 0">
                     <span class="name">{{ item.beReplied[0].user.nickname }}：</span>
@@ -100,9 +100,9 @@
           <div class="item" v-for="item in simiMvs" :key="item.id">
             <div class="img-wrap">
               <img :src="item.cover" alt="" />
-              <span class="iconfont icon-play" @click="playmv(item.id)"></span>
+              <span class="iconfont icon-24gf-play" @click="playmv(item.id)"></span>
               <div class="num-wrap">
-                <div class="iconfont icon-play"></div>
+                <div class="iconfont icon-24gf-play"></div>
                 <div class="num">{{ item.playCount }}</div>
               </div>
               <span class="time">{{ item.duration }}</span>
@@ -175,20 +175,21 @@ export default {
     async simiMv () {
       this.$api.simiMvs(this.$route.query.q).then(val => {
         this.simiMvs = val
+
+        // 时间格式化
+        for (let i = 0; i < this.simiMvs.length; i++) {
+          const duration = this.simiMvs[i].duration
+          // 毫秒 s/1000
+          // 分 m/60
+          // 秒 350 % 60
+          let min = parseInt(duration / 1000 / 60)
+          min = min < 10 ? '0' + min : min
+          let sec = parseInt((duration / 1000) % 60)
+          sec = sec < 10 ? '0' + sec : sec
+          this.simiMvs[i].duration = `${min}:${sec}`
+          this.simiMvs[i].playCount = parseInt(this.simiMvs[i].playCount / 10000) + '万'
+        }
       })
-      // 时间格式化
-      for (let i = 0; i < this.simiMvs.length; i++) {
-        const duration = this.simiMvs[i].duration
-        // 毫秒 s/1000
-        // 分 m/60
-        // 秒 350 % 60
-        let min = parseInt(duration / 1000 / 60)
-        min = min < 10 ? '0' + min : min
-        let sec = parseInt((duration / 1000) % 60)
-        sec = sec < 10 ? '0' + sec : sec
-        this.simiMvs[i].duration = `${min}:${sec}`
-        this.simiMvs[i].playCount = parseInt(this.simiMvs[i].playCount / 10000) + '万'
-      }
     },
     async mvsInfo () {
       // 获取 mv 的信息
@@ -271,21 +272,26 @@ export default {
     },
     // 点赞评论
     async comeon (id) {
-      const { data: res } = await this.$axios.get('/api/comment/like', {
-        params: {
-          id: this.$route.query.q,
-          cid: id,
-          type: 1,
-          t: 1
+      const { data: resfour } = await this.$axios.get('/api/login/status')
+      if (resfour.data.profile !== null && resfour.data.account !== null) {
+        const { data: res } = await this.$axios.get('/api/comment/like', {
+          params: {
+            id: this.$route.query.q,
+            cid: id,
+            type: 1,
+            t: 1
+          }
+        })
+        if (res.code === 200) {
+          document.querySelector('.likecount').style.color = 'red'
+          this.getNewComment()
+          this.$message.info(res.msg)
+        } else {
+          document.querySelector('.likecount').style.color = '#c7c9cc'
+          this.$message.error('点赞失败')
         }
-      })
-      if (res.code === 200) {
-        document.querySelector('.likecount').style.color = 'red'
-        this.getNewComment()
-        this.$message.info(res.msg)
       } else {
-        document.querySelector('.likecount').style.color = '#c7c9cc'
-        this.$message.error('点赞失败')
+        this.$message.error('请先登录在进行评论')
       }
     }
   }

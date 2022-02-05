@@ -13,14 +13,19 @@
       </el-table-column>
       <el-table-column label="封面">
         <template slot-scope="scope">
-          <el-image :src="scope.row.album.picUrl" lazy></el-image>
+          <div class="info">
+            <el-image :src="scope.row.album.picUrl" lazy></el-image>
+            <span class="iconfont icon-bofang"></span>
+          </div>
         </template>
       </el-table-column>
       <el-table-column label="音乐标题">
         <template slot-scope="scope">
-          <label>{{ scope.row.name }}</label>
+          <span>{{ scope.row.name }}</span>
           <!-- 防止事件冒泡 .stop.prevent -->
-          <span v-if="scope.row.mvid != 0" class="iconfont icon-mv" @click.stop.prevent="toMv(scope.row.mvid)"></span>
+          <span v-if="scope.row.fee === 1" class="iconfont icon-VIP" style="color: red; font-size: 23px;"></span>
+          <span v-if="scope.row.privilege.maxbr === 999000" class="iconfont icon-wusunyinzhi" style="color: red; font-size: 28px;"></span>
+          <span v-if="scope.row.mvid != 0" class="iconfont icon-movie-line" @click.stop.prevent="toMv(scope.row.mvid)"></span>
         </template>
       </el-table-column>
       <el-table-column prop="album.artists[0].name" label="歌手">

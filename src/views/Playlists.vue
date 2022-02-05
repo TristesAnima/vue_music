@@ -43,7 +43,7 @@
                 <span class="num">{{ item.playCount }}</span>
               </div>
               <img :src="item.coverImgUrl" alt="" />
-              <span class="iconfont icon-play"></span>
+              <span class="iconfont icon-24gf-play"></span>
             </div>
             <p class="name">{{ item.name }}</p>
           </div>

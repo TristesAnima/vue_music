@@ -13,8 +13,10 @@
           <el-table :data="songList" style="width: 100%" stripe :header-cell-style="{'text-align':'center'}" :cell-style="{'text-align':'center'}" @row-click="playMusic">
             <el-table-column label="音乐标题">
               <template slot-scope="scope">
-                <span>{{ scope.row.name }}</span>
-                <span v-if="scope.row.mv != 0" class="iconfont icon-mv" @click.stop.prevent="toMv(scope.row.mv)" style="color: red;margin: 6px 0 0 5px;"></span>
+                <span class="span">{{ scope.row.name }}</span>
+                <span v-if="scope.row.fee === 1" class="span iconfont icon-VIP" style="color: red; font-size: 23px;"></span>
+                <span v-if="scope.row.mv != 0" class="span iconfont icon-movie-line" @click.stop.prevent="toMv(scope.row.mv)" style="color: red; font-size: 15px;"></span>
+                <span v-if="scope.row.privilege.maxbr === 999000" class="span iconfont icon-wusunyinzhi" style="color: red; font-size: 28px;"></span>
               </template>
             </el-table-column>
             <el-table-column label="歌手">
@@ -43,7 +45,7 @@
                   <span class="num">{{ item.playCount }}</span>
                 </div>
                 <img :src="item.coverImgUrl" alt="" />
-                <span class="iconfont icon-play"></span>
+                <span class="iconfont icon-24gf-play"></span>
               </div>
               <p class="name">{{ item.name }}</p>
             </div>
@@ -56,9 +58,9 @@
               <div class="img-wrap">
                 <!-- 封面 -->
                 <img :src="item.cover" alt="" />
-                <span class="iconfont icon-play"></span>
+                <span class="iconfont icon-24gf-play"></span>
                 <div class="num-wrap">
-                  <div class="iconfont icon-play"></div>
+                  <div class="iconfont icon-24gf-play"></div>
                   <!-- 播放次数 -->
                   <div class="num">{{ item.playCount }}</div>
                 </div>
@@ -220,7 +222,6 @@ export default {
             if (sec < 10) {
               sec = '0' + sec
             }
-            // console.log(min + '|' + sec)
             this.songList[i].dt = min + ':' + sec
           }
           // 保存总数

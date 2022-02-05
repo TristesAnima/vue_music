@@ -2,20 +2,20 @@
   <div class="top-container">
     <!-- 移动端显示的图片 -->
     <div class="image">
-      <img src="../assets/logo.png">
+      <img src="@/assets/logo.png">
     </div>
 
     <!-- pc端显示 -->
     <div class="left-box">
       <div class="icon-wrapper">
-        <span class="iconfont icon-home" @click="home"></span>
+        <span class="iconfont icon-fl-jia" @click="home"></span>
         <div class="icon">
-          <img src="../assets/cat.svg">
+          <img src="http://chcmusic.cloud/images/Cat.svg">
         </div>
       </div>
       <div class="history-wrapper">
-        <span class="iconfont icon-arrow-lift" @click="back"></span>
-        <span class="iconfont icon-arrow-right" @click="forward"></span>
+        <span class="iconfont icon-right" @click="back"></span>
+        <span class="iconfont icon-tubiaozhizuo--" @click="forward"></span>
       </div>
     </div>
 
@@ -70,25 +70,27 @@
     <!-- 登录按钮 -->
     <div class="loginBtn" @click="tologin" v-if="control">
       <div class="icon">
-        <i class="el-icon-user-solid"></i>
+        <i class="iconfont icon-denglu"></i>
       </div>
       <div class="ziti">登录</div>
     </div>
 
     <div class="login-wrap" v-else>
       <div class="img-wrap">
-        <div class="avataurl" style="float: left;" @click="visible = !visible; detail()" v-if="loadData.profile">
-          <el-avatar shape="square" fit="cover" :src="loadData.profile.avatarUrl"></el-avatar>
+        <div class="avataurl" style="float: left;" @click="visible = !visible" v-if="loadData.profile != null">
+          <el-avatar class="headerPhoto" shape="square" fit="cover" :src="loadData.profile.avatarUrl"></el-avatar>
+          <img class="vip" v-if="vipInfo.associator" :src="vipInfo.redVipDynamicIconUrl" alt="">
         </div>
         <div class="name" v-if="loadData.profile">{{ loadData.profile.nickname }}</div>
-        <div class="privatemsg">
-          <router-link to="/home/privatemsg">
-            <el-badge :value="msg === 0 ? '' : msg" :max="99" class="item">
-              <el-button class="share-button" icon="el-icon-message" size="mini"></el-button>
-            </el-badge>
-          </router-link>
-        </div>
-        <el-button type="danger" plain @click="loginout" size="mini" style="margin-left: 40px;">退出登录</el-button>
+        <el-dropdown style="margin-left: 20px;" @command="menu">
+          <span class="el-dropdown-link">
+            更多<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="priInfo" icon="iconfont icon-sixin">私信</el-dropdown-item>
+            <el-dropdown-item command="loginout" icon="iconfont icon-tuichudenglu">退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
 
         <!-- 登录信息卡 -->
         <el-popover placement="bottom" title="" width="450" v-model="visible">
@@ -166,7 +168,8 @@ export default {
       // 默认搜索词
       tip: '',
       suggestInfo: {},
-      hotResult: []
+      hotResult: [],
+      vipInfo: {}
     }
   },
   async created () {
@@ -188,9 +191,30 @@ export default {
         }
       })
       this.suggestInfo = suggest.result
+    },
+    visible (newval) {
+      if (newval === true) {
+        return this.detail()
+      }
     }
   },
   methods: {
+    menu (command) {
+      switch (command) {
+        case 'loginout':
+          this.control = true
+          sessionStorage.clear()
+          this.$axios({
+            url: '/api/logout',
+            method: 'get'
+          })
+          this.$message.warning('已退出')
+          break
+        case 'priInfo':
+          this.$router.push('/home/privatemsg')
+          break
+      }
+    },
     // 热搜
     async hotSearch () {
       const { data: res } = await this.$axios.get('/api/search/hot/detail')
@@ -217,6 +241,9 @@ export default {
         this.control = true
         return false
       }
+      // vip信息
+      const { data: resvip } = await this.$axios.get('/api/vip/info')
+      this.vipInfo = resvip.data
     },
     // 点击头像后展现信息的接口
     async detail () {
@@ -283,16 +310,6 @@ export default {
         this.msg = res.newMsgCount
       }
     },
-    // 退出登录
-    loginout () {
-      sessionStorage.clear()
-      this.control = true
-      this.$axios({
-        url: '/api/logout',
-        method: 'get'
-      })
-      this.$message.warning('已退出')
-    },
     toResult () {
       this.searchVisible = false
       if (this.inputValue === '') {
@@ -337,5 +354,13 @@ export default {
 <style lang="css" scoped>
 .el-avatar {
   background: none;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409eff;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
 }
 </style>

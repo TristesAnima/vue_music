@@ -132,10 +132,11 @@ export const getPlayListsInfo = async (id) => {
   return res.playlist
 }
 // 歌单歌曲
-export const getAllMusic = async (id) => {
+export const getAllMusic = async (id, limit) => {
   const { data: res } = await axios.get('/api/playlist/track/all', {
     params: {
-      id
+      id,
+      limit
     }
   })
   return res.songs
