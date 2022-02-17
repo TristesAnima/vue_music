@@ -4,12 +4,12 @@
 
 <script>
 export default {
-  created () {
-    this.$request.request()
-  },
-  mounted () {
-    this.$request.response()
-  }
+  // created () {
+  //   this.$request.request()
+  // },
+  // mounted () {
+  //   this.$request.response()
+  // }
 }
 </script>
 

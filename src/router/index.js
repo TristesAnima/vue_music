@@ -71,8 +71,6 @@ router.beforeEach(function (to, from, next) {
 })
 
 // 当路由跳转结束后
-router.afterEach(() => {
-  // 关闭进度条
-})
+router.afterEach(() => {})
 
 export default router

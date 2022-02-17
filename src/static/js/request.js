@@ -12,39 +12,37 @@ NProgress.configure({
 })
 
 // 请求拦截器(处理请求数据)
-export const request = () => {
-  Axios.interceptors.request.use(
-    (config) => {
-      NProgress.start()
-      if (config.method === 'post') {
-        config.data = {
-          _t: new Date().getTime(),
-          ...config.data
-        }
-      } else if (config.method === 'get') {
-        config.params = {
-          _t: new Date().getTime(),
-          ...config.params
-        }
+Axios.interceptors.request.use(
+  (config) => {
+    NProgress.start()
+    if (config.method === 'post') {
+      config.data = {
+        ...config.data,
+        _t: new Date().getTime()
       }
-      return config
-    },
-    function (error) {
-      // Do something with request error
-      return Promise.reject(error)
+    } else if (config.method === 'get') {
+      config.params = {
+        _t: new Date().getTime(),
+        ...config.params
+      }
     }
-  )
-}
+    return config
+  },
+  function (error) {
+    // Do something with request error
+    return Promise.reject(error)
+  }
+)
+
 // 响应拦截器(处理响应数据)
-export const response = () => {
-  Axios.interceptors.response.use(
-    (config) => {
-      NProgress.done()
-      return config
-    },
-    function (error) {
-      // Do something with response error
-      return Promise.reject(error)
-    }
-  )
-}
+Axios.interceptors.response.use(
+  (config) => {
+    NProgress.done()
+    return config
+  },
+  function (error) {
+    // Do something with response error
+    return Promise.reject(error)
+  }
+)
+export default Axios

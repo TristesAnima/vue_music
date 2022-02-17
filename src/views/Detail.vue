@@ -120,17 +120,11 @@
 
     <!-- 用户上传头像的dialog -->
     <el-dialog title="修改头像" :visible.sync="UploadPhotoDialogVisible" width="50%" center>
-      <el-upload action="/api/avatar/upload" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove" :before-upload="beforeAvatarUpload" :limit="1" :auto-upload="upload">
-        <i class="el-icon-plus"></i>
+      <el-upload class="upload-demo" drag :action="`http://81.68.248.232:3000/avatar/upload?_t=${Date.now()}&imgSize=500`" :data="uploadPhotoCookie" name="imgFile" :multiple="false" :before-upload="beforeAvatarUpload" :on-error="err" :on-success="succ">
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em><br><em>上传图片长宽应为500px否则会与实际有出入,建议用网易云APP上传</em></div>
+        <div class="el-upload__tip" slot="tip">只能上传JPG JPEG PNG文件，且不超过2M</div>
       </el-upload>
-      <el-dialog :visible.sync="dialogVisible">
-        <img width="100%" :src="dialogImageUrl" alt="">
-      </el-dialog>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="UploadPhotoDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="upload = true">确 定</el-button>
-        <div slot="tip" class="el-upload__tip">只能上传jpg/jpeg/png文件，且不超过4M</div>
-      </span>
     </el-dialog>
 
   </div>
@@ -140,6 +134,9 @@
 export default {
   data () {
     return {
+      uploadPhotoCookie: {
+        cookie: document.cookie
+      },
       upload: false,
       dialogImageUrl: '',
       dialogVisible: false,
@@ -353,25 +350,27 @@ export default {
     editUserAvatar () {
       this.UploadPhotoDialogVisible = true
     },
-
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
-    },
-    handlePictureCardPreview (file) {
-      this.dialogImageUrl = file.url
-      this.dialogVisible = true
-    },
+    // 上传头像功能
     beforeAvatarUpload (file) {
-      const isJPG = file.type === 'image/jpeg' || 'image/jpg' || 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 4
+      const isJPG = file.type === 'image/jpeg' || 'image/png' || 'image/jpg'
+      const isLt2M = file.size / 1024 / 1024 < 2
 
       if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPEG jpg png 格式!')
+        this.$message.error('上传头像图片只能是 JPG JPEG PNG 格式!')
       }
       if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 4MB!')
+        this.$message.error('上传头像图片大小不能超过 2MB!')
       }
       return isJPG && isLt2M
+    },
+    succ (res, file, fileList) {
+      if (res.code === 200) {
+        this.$message.success('修改成功,请刷新此页面！')
+        this.UploadPhotoDialogVisible = false
+      }
+    },
+    err (err, file, fileList) {
+      this.$message.error(err)
     }
   }
 }

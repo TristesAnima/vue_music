@@ -2,9 +2,8 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import Axios from 'axios'
 // axios请求拦截器
-import * as request from './static/js/request.js'
+import axiosInit from './static/js/request.js'
 // 导入公用的api
 import * as Api from '@/static/js/api.js'
 // 导入 vue-aplayer
@@ -30,8 +29,7 @@ Vue.use(APlayer, {
   productionTip: true
 })
 // 挂载到Vue实例上
-Vue.prototype.$axios = Axios
-Vue.prototype.$request = request
+Vue.prototype.$axios = axiosInit
 Vue.prototype.$api = Api
 Vue.prototype.$dayjs = dayjs
 
