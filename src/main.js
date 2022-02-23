@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
+import VueParticles from 'vue-particles'
 import store from './store'
 // axios请求拦截器
 import axiosInit from './static/js/request.js'
@@ -21,6 +22,7 @@ import './static/css/index.css'
 // 移动端初始化样式
 import './static/css/mobilephone.css'
 
+Vue.use(VueParticles)
 // 全局使用插件 Element-ui
 Vue.use(ElementUI)
 // 全局使用插件 vue-aplayer

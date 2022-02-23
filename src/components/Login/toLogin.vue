@@ -1,8 +1,9 @@
 <template>
   <div class="toLogin-container">
+    <Bg></Bg>
 
     <div class="box" v-show="show">
-      <el-tag class="toggle" @click="getewm(); show = !show">{{ show ? '扫码登陆' : '手机号登陆' }}</el-tag>
+      <el-tag class="toggle" @click="getewm();show=false;isBeginTimer=true">扫码登录</el-tag>
       <!-- <el-button class="toggle" @click="show = !show">{{ show ? '扫码登陆' : '手机号登陆' }}</el-button> -->
       <div class="img">
         <img src="@/assets/logo.png">
@@ -24,8 +25,8 @@
       </el-form>
     </div>
 
-    <div class="erweima" v-show="!show">
-      <el-tag type="danger" class="toggle" @click="show = !show">{{ show ? '扫码登陆' : '手机号登陆' }}</el-tag>
+    <div class="erweima" v-show="show===false ? true : false">
+      <el-tag type="danger" class="toggle" @click="show=true; isBeginTimer=false">手机号登陆</el-tag>
       <img :src="erweima.qrimg">
       <div class="status">{{ statusText }}</div>
     </div>
@@ -33,6 +34,7 @@
 </template>
 
 <script>
+import Bg from './LoginBg.vue'
 export default {
   name: 'tologin',
   data () {
@@ -44,7 +46,8 @@ export default {
       erweima: {},
       statusText: '',
       // 储存定时器
-      timer: null
+      timer: null,
+      isBeginTimer: true
     }
   },
   watch: {
@@ -54,6 +57,11 @@ export default {
         this.$router.push('/home')
         clearInterval(this.timer)
         this.timer = null
+      }
+    },
+    isBeginTimer (newValue, oldValue) {
+      if (newValue === false) {
+        clearInterval(this.timer)
       }
     }
   },
@@ -109,14 +117,13 @@ export default {
         this.erweima = resone.data
 
         this.timer = setInterval(async () => {
-        // 获取二维码状态信息
+          // 获取二维码状态信息
           if (this.erweima) {
             const { data: restwo } = await this.$axios.get('/api/login/qr/check', {
               params: {
                 key: window.sessionStorage.getItem('unikey')
               }
             })
-            console.log(restwo)
             switch (restwo.code) {
               case 800:
                 this.statusText = restwo.message
@@ -132,9 +139,12 @@ export default {
                 break
             }
           }
-        }, 2500)
+        }, 1000)
       }
     }
+  },
+  components: {
+    Bg
   }
 }
 </script>
