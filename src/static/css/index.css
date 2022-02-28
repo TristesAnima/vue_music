@@ -192,7 +192,7 @@ ol {
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   font-size: 14px;
 }
 
@@ -923,6 +923,40 @@ ol {
   margin-bottom: 30px;
 }
 
+.result-container .el-dialog .items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: flex-start;
+  text-align: center;
+}
+
+/* 弹性布局末尾居中的解决方法 */
+.result-container .el-dialog .items::after {
+  content: ' ';
+  flex: auto;
+}
+
+.result-container .el-dialog .items .item {
+  position: relative;
+}
+
+.result-container .el-dialog .items .item .icon-tianjia {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+  color: black;
+  opacity: 0;
+}
+
+.result-container .el-dialog .items .item:hover .icon-tianjia {
+  opacity: 1;
+  background-color: rgba(60, 64, 67, 0.7);
+  border-radius: 4px;
+}
+
 .result-container .title-wrap .title {
   margin-right: 10px;
 }
@@ -1474,9 +1508,9 @@ ol {
   background-attachment: fixed;
 }
 
-.toLogin-container * {
+/* .toLogin-container * {
   color: white;
-}
+} */
 
 .toLogin-container .box {
   position: fixed;

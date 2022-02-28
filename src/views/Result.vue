@@ -33,6 +33,11 @@
             </el-table-column>
             <el-table-column prop="dt" label="时长">
             </el-table-column>
+            <el-table-column label="更多">
+              <template slot-scope="scope">
+                <span class="iconfont icon-tianjia" @click.stop.prevent="isadd(scope.row.id)"></span>
+              </template>
+            </el-table-column>
           </el-table>
         </el-tab-pane>
 
@@ -96,6 +101,20 @@
         </el-tab-pane>
       </el-tabs>
     </el-tabs>
+
+    <el-dialog title="提示" :visible.sync="addPlaylistDialogVisible" width="40%" center>
+      <div class="items">
+        <div class="item" v-for="item in userPlaylists" :key="item.id">
+          <el-image style="width: 100px; height: 100px" :src="item.coverImgUrl" fit="cover" lazy></el-image>
+          <p class="title">{{ item.name }}</p>
+          <span class="iconfont icon-tianjia" @click="isAddOk(item.id)"></span>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addPlaylistDialogVisible = false">取 消</el-button>
+      </span>
+    </el-dialog>
+
     <el-pagination @current-change="handleCurrentChange" :background="true" layout="prev, pager, next" :current-page="page" :total="count" :limit="limit">
     </el-pagination>
   </div>
@@ -122,7 +141,13 @@ export default {
       count: 0,
       // 分页
       page: 1,
-      limit: 15
+      limit: 15,
+      addPlaylistDialogVisible: false,
+      userPlaylists: [],
+      // 用户id
+      userId: 0,
+      // 歌曲ID
+      mId: 0
     }
   },
   // 生命周期钩子 回调函数
@@ -305,6 +330,24 @@ export default {
     handleCurrentChange (val) {
       this.page = val
       this.searchresult()
+    },
+    async isadd (musicId) {
+      this.mId = musicId
+      this.addPlaylistDialogVisible = true
+      const { data: resfour } = await this.$axios.get('/api/login/status')
+      if (resfour.data.profile !== null && resfour.data.account !== null) {
+        this.userId = resfour.data.profile.userId
+        this.$api.getPersonMusicList(this.userId).then(val => {
+          this.userPlaylists = val
+        })
+      }
+    },
+    isAddOk (playListid) {
+      this.addPlaylistDialogVisible = false
+      this.$api.add(playListid, this.mId).then(val => {
+        if (val.body.code === 200) return this.$notify.success('已成功添加 快去看看吧')
+        this.$notify.info(val.body.message + '添加失败')
+      })
     }
   }
 }

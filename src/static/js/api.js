@@ -120,6 +120,17 @@ export const searchres = async (keywords, limit, page) => {
   return res.result
 }
 
+export const add = async (playListid, mId) => {
+  const { data: res } = await Vue.prototype.$axios.get('/api/playlist/tracks', {
+    params: {
+      op: 'add',
+      tracks: mId,
+      pid: playListid
+    }
+  })
+  return res
+}
+
 // playlist 界面-------------------------------------------------------------------------------------------------------------------------------------
 // 封面信息
 export const getPlayListsInfo = async (id) => {
