@@ -33,11 +33,11 @@
 
     <el-tabs v-model="activeIndex">
       <el-tab-pane label="歌曲列表" name="1">
-        <el-table :data="playlistAll" empty-text="Loading...." style="width: 100%" :header-cell-style="{'text-align':'center'}" :cell-style="{'text-align':'center'}" @row-click="playMusic">
+        <el-table :data="playlistAll" empty-text="Loading...." style="width: 100%" :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }" @row-click="playMusic">
           <el-table-column width="180">
             <template slot-scope="scope">
               <div class="plays-wrap">
-                <img :src="scope.row.al.picUrl" alt="加载失败 尝试刷新吧!" style="width: 50px; height: 50px; border-radius: 5px">
+                <img :src="scope.row.al.picUrl" alt="加载失败 尝试刷新吧!" style="width: 50px; height: 50px; border-radius: 5px" />
                 <span class="iconfont icon-bofang"></span>
               </div>
             </template>
@@ -45,8 +45,8 @@
           <el-table-column label="音乐标题" width="180">
             <template slot-scope="scope">
               {{ scope.row.name }}
-              <span v-if="scope.row.mv != 0" class="iconfont icon-movie-line" @click.stop.prevent="toMv(scope.row.mv)" style="color: red;margin: 0 2px; display: inline-block; vertical-align: middle;"></span>
-              <span v-if="scope.row.fee === 1" class="span iconfont icon-VIP" style="color: red; font-size: 23px; display: inline-block; vertical-align: middle;"></span>
+              <span v-if="scope.row.mv != 0" class="iconfont icon-movie-line" @click.stop.prevent="toMv(scope.row.mv)" style="color: red; margin: 0 2px; display: inline-block; vertical-align: middle"></span>
+              <span v-if="scope.row.fee === 1" class="span iconfont icon-VIP" style="color: red; font-size: 23px; display: inline-block; vertical-align: middle"></span>
             </template>
           </el-table-column>
           <el-table-column label="歌手">
@@ -59,18 +59,14 @@
               {{ scope.row.al.name }}
             </template>
           </el-table-column>
-          <el-table-column label="时长">
-            不详
-          </el-table-column>
+          <el-table-column label="时长" prop="dt"> </el-table-column>
         </el-table>
-
       </el-tab-pane>
 
       <el-tab-pane label="评论" name="2">
         <!-- 用户评论发布功能 -->
         <div class="userComment">
-          <el-input class="comm" type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea">
-          </el-input>
+          <el-input class="comm" type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea"> </el-input>
           <div>
             <el-button class="btn" type="primary" icon="el-icon-edit" @click="sendComment()">发表</el-button>
           </div>
@@ -138,6 +134,7 @@
 </template>
 
 <script>
+import { time } from '../static/js/timeTool'
 export default {
   name: 'playlist',
   data () {
@@ -170,7 +167,7 @@ export default {
     }
   },
   async created () {
-    this.$api.getPlayListsInfo(this.$route.query.q).then(val => {
+    this.$api.getPlayListsInfo(this.$route.query.q).then((val) => {
       this.playlist = val
       this.playlist.creator.avatarUrl = val.creator.avatarUrl
     })
@@ -182,8 +179,11 @@ export default {
   methods: {
     allMusic () {
       // 全部歌曲
-      this.$api.getAllMusic(this.$route.query.q, this.limit).then(val => {
+      this.$api.getAllMusic(this.$route.query.q, this.limit).then((val) => {
         this.playlistAll = val
+        for (let i = 0; i < val.length; i++) {
+          this.playlistAll[i].dt = time(val[i].dt)
+        }
       })
     },
     // 播放音乐
@@ -192,7 +192,7 @@ export default {
       this.$store.commit('playMusic')
     },
     async gethotcomment () {
-      this.$api.gethotcomment(this.$route.query.q).then(val => {
+      this.$api.gethotcomment(this.$route.query.q).then((val) => {
         this.hotComment = val.hotComments
         this.hotCount = val.total
         // 热评评论时间格式化
@@ -203,7 +203,7 @@ export default {
     },
     // 获取最新评论
     async getNewComment () {
-      this.$api.getNewComment(this.$route.query.q, this.page).then(val => {
+      this.$api.getNewComment(this.$route.query.q, this.page).then((val) => {
         // 总个数
         this.total = val.total
         // 评论数据
@@ -236,13 +236,13 @@ export default {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).catch(err => err)
+        }).catch((err) => err)
 
         if (confirmResult !== 'confirm') {
           return this.$message.info('已取消发送')
         }
 
-        this.$api.sendComment(this.$route.query.q, this.textarea, this.type).then(val => {
+        this.$api.sendComment(this.$route.query.q, this.textarea, this.type).then((val) => {
           if (val.code === 200) {
             this.getNewComment()
             this.textarea = ''
